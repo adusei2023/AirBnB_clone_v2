@@ -1,31 +1,24 @@
 #!/usr/bin/python3
+"""
+starts a Flask web applicationstart Flask application"""
+
 from flask import Flask, render_template
+from models import *
 from models import storage
-from models.state import State
-from models.city import City
-
-
 app = Flask(__name__)
 
 
+@app.route('/cities_by_states', strict_slashes=False)
+def cities_by_states():
+    """display the states and cities listed in alphabetical order"""
+    states = storage.all("State").values()
+    return render_template('8-cities_by_states.html', states=states)
+
+
 @app.teardown_appcontext
-def tear_down(self):
-    """tear down app context"""
+def teardown_db(exception):
+    """closes the storage on teardown"""
     storage.close()
 
-
-@app.route('/cities_by_states', strict_slashes=False)
-def list_states():
-    """lists states from database
-    Returns:
-        HTML
-    """
-    dict_states = storage.all(State)
-    all_states = []
-    for k, v in dict_states.items():
-        all_states.append(v)
-    return render_template('8-cities_by_states.html', all_states=all_states)
-
-
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000)
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port='5000')
